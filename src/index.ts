@@ -1,11 +1,12 @@
 import { serve } from "bun";
 import index from "./index.html";
+import { ValePage } from "./pages/ValePage";
 
 const server = serve({
   routes: {
-    // Serve index.html for all unmatched routes.
-    "/*": () => new Response("Not found"),
+    "/*": index,
     "/": index,
+    "/gift": index,
 
     "/api/hello": {
       async GET(req) {

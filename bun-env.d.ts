@@ -8,6 +8,14 @@ declare module "*.svg" {
   export = path;
 }
 
+declare module "*.svg?raw" {
+  /**
+   * Raw SVG string content
+   */
+  const content: string;
+  export default content;
+}
+
 declare module "*.module.css" {
   /**
    * A record of class names to their corresponding CSS module classes
