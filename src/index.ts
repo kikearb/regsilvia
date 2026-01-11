@@ -1,34 +1,11 @@
 import { serve } from "bun";
 import index from "./index.html";
-import { ValePage } from "./pages/ValePage";
 
 const server = serve({
   routes: {
-    "/*": index,
+    "/*": () => new Response("Not Found", { status: 404 }),
     "/": index,
-    "/gift": index,
-
-    "/api/hello": {
-      async GET(req) {
-        return Response.json({
-          message: "Hello, world!",
-          method: "GET",
-        });
-      },
-      async PUT(req) {
-        return Response.json({
-          message: "Hello, world!",
-          method: "PUT",
-        });
-      },
-    },
-
-    "/api/hello/:name": async req => {
-      const name = req.params.name;
-      return Response.json({
-        message: `Hello, ${name}!`,
-      });
-    },
+    "/regsilvia": index,
   },
 
   development: process.env.NODE_ENV !== "production" && {

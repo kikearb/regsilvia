@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ValePage } from "@/pages/ValePage";
 import "./index.css";
 
-const VALE_ROUTES = new Set(["/", "/vale", "/gift"]);
+const VALE_ROUTES = new Set(["/", "/regsilvia"]);
 
 export function App() {
   const [pathname, setPathname] = useState(() => window.location.pathname);
@@ -25,7 +31,9 @@ export function App() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="max-w-md text-center">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">Ruta no encontrada</CardTitle>
+          <CardTitle className="text-2xl font-semibold">
+            Ruta no encontrada
+          </CardTitle>
           <CardDescription>
             Usa el enlace para ir al mini juego.
           </CardDescription>
