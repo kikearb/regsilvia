@@ -4,10 +4,20 @@
   :root {
     @apply font-sans;
   }
+}
 
-  body {
-    @apply grid place-items-center min-w-[320px] min-h-screen relative m-0 bg-white text-foreground;
-  }
+.home-bg {
+  background-image: url("./assets/lupa.gif");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.premio-bg {
+  background-image: url("./assets/confetti2.gif");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Removed Bun background animation */
@@ -26,5 +36,20 @@
   ::before,
   ::after {
     animation: none !important;
+  }
+}
+
+.fade-in {
+  animation: fade-in 600ms ease-out both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -3,9 +3,9 @@ import index from "./index.html";
 
 const server = serve({
   routes: {
-    "/*": () => new Response("Not Found", { status: 404 }),
     "/": index,
-    "/regsilvia": index,
+    "/prueba": index,
+    "/premio": index,
   },
 
   development: process.env.NODE_ENV !== "production" && {

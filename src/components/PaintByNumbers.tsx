@@ -1,10 +1,21 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useReducer } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "../components/ui/button";
 import { Painting } from "./Painting";
 
 type UndoAction = {
   colorId: string;
 };
+
+type PaintState = {
+  paintedColorIds: string[];
+  history: UndoAction[];
+};
+
+type PaintAction =
+  | { type: "fill"; colorId: string }
+  | { type: "undo" }
+  | { type: "reset" };
 
 const COLORS = [
   { num: 1, label: "1", value: "#2a2623" },
@@ -22,10 +33,43 @@ const COLORS = [
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
+const paintReducer = (state: PaintState, action: PaintAction): PaintState => {
+  switch (action.type) {
+    case "fill": {
+      if (state.paintedColorIds.includes(action.colorId)) {
+        return state;
+      }
+      return {
+        paintedColorIds: [...state.paintedColorIds, action.colorId],
+        history: [...state.history, { colorId: action.colorId }],
+      };
+    }
+    case "undo": {
+      if (state.history.length === 0) {
+        return state;
+      }
+      const last = state.history[state.history.length - 1];
+      return {
+        paintedColorIds: state.paintedColorIds.filter(
+          (id) => id !== last?.colorId
+        ),
+        history: state.history.slice(0, -1),
+      };
+    }
+    case "reset":
+      return { paintedColorIds: [], history: [] };
+    default:
+      return state;
+  }
+};
+
 export function PaintByNumbers() {
+  const navigate = useNavigate();
   const [selectedNumber, setSelectedNumber] = useState<number>(1);
-  const [paintedColorIds, setPaintedColorIds] = useState<string[]>([]);
-  const [history, setHistory] = useState<UndoAction[]>([]);
+  const [{ paintedColorIds, history }, dispatch] = useReducer(paintReducer, {
+    paintedColorIds: [],
+    history: [],
+  });
   const revealButtonRef = useRef<HTMLButtonElement | null>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -42,23 +86,11 @@ export function PaintByNumbers() {
     paintedColorIds.length > 0 && paintedColorIds.length === COLORS.length;
 
   const handleUndo = () => {
-    setHistory((prev) => {
-      if (prev.length === 0) {
-        return prev;
-      }
-
-      const last = prev[prev.length - 1];
-      setPaintedColorIds((current) =>
-        current.filter((id) => id !== last?.colorId)
-      );
-
-      return prev.slice(0, -1);
-    });
+    dispatch({ type: "undo" });
   };
 
   const handleReset = () => {
-    setPaintedColorIds([]);
-    setHistory([]);
+    dispatch({ type: "reset" });
   };
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -102,14 +134,11 @@ export function PaintByNumbers() {
   const zoomOut = () => setZoom((value) => clamp(value - 0.2, 0.6, 3));
 
   const handleFill = () => {
-    const colorId = selectedNumber.toString();
-    setPaintedColorIds((prev) => {
-      if (prev.includes(colorId)) {
-        return prev;
-      }
-      setHistory((historyPrev) => [...historyPrev, { colorId }]);
-      return [...prev, colorId];
-    });
+    dispatch({ type: "fill", colorId: selectedNumber.toString() });
+  };
+
+  const goToPremio = () => {
+    navigate({ to: "/premio" });
   };
 
   useEffect(() => {
@@ -124,16 +153,6 @@ export function PaintByNumbers() {
 
   return (
     <div className="mx-auto w-full flex flex-col max-w-5xl gap-4 sm:gap-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold sm:text-2xl">
-          Como sabemos que descubrir un regalo puede ser estresante...
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Te hemos preparado esta medida antiestrés, para que lo resuelvas
-          mientras intentas descubrirlo.
-        </p>
-      </div>
-
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="grid grid-cols-5 gap-2 sm:flex sm:flex-wrap">
           {COLORS.map((color) => (
@@ -159,7 +178,7 @@ export function PaintByNumbers() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex gap-3 items-center max-sm:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
@@ -194,24 +213,21 @@ export function PaintByNumbers() {
         onPointerLeave={handlePointerUp}
         style={{ touchAction: "none" }}
       >
-        <div
-          className="inline-block transition-transform duration-150"
-          style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-            transformOrigin: "center",
-          }}
-        >
-          <Painting
-            currentColorId={`${selectedNumber}`}
-            paintedColorIds={paintedColorIds}
-            onFill={handleFill}
-          />
-        </div>
+        <Painting
+          currentColorId={`${selectedNumber}`}
+          paintedColorIds={paintedColorIds}
+          onFill={handleFill}
+        />
       </div>
 
       {isComplete && (
         <div className="flex justify-center">
-          <Button ref={revealButtonRef} type="button" variant="outline">
+          <Button
+            ref={revealButtonRef}
+            type="button"
+            variant="outline"
+            onClick={goToPremio}
+          >
             Descubre tu regalo
           </Button>
         </div>

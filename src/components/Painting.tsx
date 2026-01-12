@@ -49,7 +49,7 @@ export const Painting = ({
       version="1.1"
       viewBox="0 0 720 960"
       ref={svgRef}
-      className="max-w-full w-[560px] h-[720px] sm:w-[720px] sm:h-[960px] md:w-[960px] md:h-[1280px]"
+      className="w-full h-auto max-w-[720px]"
     >
       <path
         className="cursor-pointer"

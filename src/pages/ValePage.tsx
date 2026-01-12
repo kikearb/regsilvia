@@ -14,10 +14,11 @@ export const ValePage = () => {
         <Card className="border-none shadow-none">
           <CardHeader className="px-0">
             <CardTitle className="text-3xl font-bold">
-              ¿Te han regalado algo?
+              Como sabemos que descubrir un regalo puede ser estresante...
             </CardTitle>
             <CardDescription className="text-base">
-              ¡Ay! ¿Qué será?
+              Te hemos preparado esta medida antiestrés, para que lo resuelvas
+              mientras intentas descubrirlo.
             </CardDescription>
           </CardHeader>
           <CardContent className="px-0">
