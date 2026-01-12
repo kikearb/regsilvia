@@ -1,5 +1,9 @@
 @import "../styles/globals.css";
 
+button {
+  cursor: pointer;
+}
+
 @layer base {
   :root {
     @apply font-sans;

@@ -33,13 +33,12 @@ const premioRoute = createRoute({
   component: Premio,
 });
 
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  aboutRoute,
-  premioRoute,
-]);
+const routeTree = rootRoute.addChildren([indexRoute, aboutRoute, premioRoute]);
 
-export const router = new Router({ routeTree });
+export const router = new Router({
+  routeTree,
+  basepath: "/regsilvia",
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
