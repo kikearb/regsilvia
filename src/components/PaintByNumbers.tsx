@@ -30,9 +30,6 @@ const COLORS = [
   { num: 10, label: "10", value: "#79a8dc" },
 ];
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value));
-
 const paintReducer = (state: PaintState, action: PaintAction): PaintState => {
   switch (action.type) {
     case "fill": {
@@ -71,16 +68,6 @@ export function PaintByNumbers() {
     history: [],
   });
   const revealButtonRef = useRef<HTMLButtonElement | null>(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const dragState = useRef({
-    isDragging: false,
-    pointerId: -1,
-    startX: 0,
-    startY: 0,
-    originX: 0,
-    originY: 0,
-  });
 
   const isComplete =
     paintedColorIds.length > 0 && paintedColorIds.length === COLORS.length;
@@ -92,46 +79,6 @@ export function PaintByNumbers() {
   const handleReset = () => {
     dispatch({ type: "reset" });
   };
-
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    const target = event.target as Element | null;
-    if (target && target.closest("path")) {
-      return;
-    }
-    dragState.current = {
-      isDragging: true,
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      originX: pan.x,
-      originY: pan.y,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragState.current.isDragging) {
-      return;
-    }
-    if (dragState.current.pointerId !== event.pointerId) {
-      return;
-    }
-    const deltaX = event.clientX - dragState.current.startX;
-    const deltaY = event.clientY - dragState.current.startY;
-    setPan({
-      x: dragState.current.originX + deltaX,
-      y: dragState.current.originY + deltaY,
-    });
-  };
-
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (dragState.current.pointerId === event.pointerId) {
-      dragState.current.isDragging = false;
-    }
-  };
-
-  const zoomIn = () => setZoom((value) => clamp(value + 0.2, 0.6, 3));
-  const zoomOut = () => setZoom((value) => clamp(value - 0.2, 0.6, 3));
 
   const handleFill = () => {
     dispatch({ type: "fill", colorId: selectedNumber.toString() });
@@ -192,26 +139,10 @@ export function PaintByNumbers() {
             Reset
           </Button>
         </div>
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" onClick={zoomOut}>
-            -
-          </Button>
-          <span className="text-sm font-medium">
-            Zoom {Math.round(zoom * 100)}%
-          </span>
-          <Button type="button" variant="outline" onClick={zoomIn}>
-            +
-          </Button>
-        </div>
       </div>
 
       <div
         className="relative -mt-2 flex w-full items-center justify-center overflow-hidden sm:mt-0"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        style={{ touchAction: "none" }}
       >
         <Painting
           currentColorId={`${selectedNumber}`}
